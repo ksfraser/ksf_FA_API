@@ -1,0 +1,23 @@
+{
+    "name": "ksfraser/ksf_fa_api",
+    "description": "KSF API module for FrontAccounting - SOAP/REST endpoints",
+    "type": "fa-module",
+    "license": "GPL-3.0",
+    "require": {
+        "php": "^8.1",
+        "ksfraser/ksf_hrm": "*",
+        "ksfraser/ksf_leave": "*",
+        "ksfraser/ksf_timesheets": "*",
+        "ksfraser/ksf_orgchart": "*",
+        "ksfraser/ksf_teams": "*",
+        "slim/slim": "^4.12",
+        "slim/psr7": "^1.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ksfraser\\FA\\API\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
