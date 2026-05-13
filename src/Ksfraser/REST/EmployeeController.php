@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ksfraser\FA\API\REST;
+namespace Ksfraser\REST;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;

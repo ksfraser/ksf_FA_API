@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ksfraser\FA\API\SOAP;
+namespace Ksfraser\SOAP;
 
 use Ksfraser\HRM\Repository\EmployeeRepository;
 use Ksfraser\HRM\Entity\Employee;

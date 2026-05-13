@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Ksfraser\\FA\\API\\": "src/"
+            "Ksfraser\\": "src/Ksfraser/"
         }
     },
     "minimum-stability": "dev",
