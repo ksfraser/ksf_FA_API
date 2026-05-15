@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:tns="https://ksfraser.com/api/soap/v1"
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:hr="https://ksfraser.com/api/soap/v1/employees"
+                  name="KSFAPI"
+                  targetNamespace="https://ksfraser.com/api/soap/v1">
+
+    <wsdl:types>
+        <xsd:schema targetNamespace="https://ksfraser.com/api/soap/v1">
+
+            <!-- Employee Complex Types -->
+            <xsd:complexType name="Employee">
+                <xsd:sequence>
+                    <xsd:element name="id" type="xsd:int" minOccurs="0"/>
+                    <xsd:element name="employee_number" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="first_name" type="xsd:string"/>
+                    <xsd:element name="last_name" type="xsd:string"/>
+                    <xsd:element name="email" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="department" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="status" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="EmployeeArray">
+                <xsd:sequence>
+                    <xsd:element name="employee" type="hr:Employee" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="CreateEmployeeRequest">
+                <xsd:sequence>
+                    <xsd:element name="first_name" type="xsd:string"/>
+                    <xsd:element name="last_name" type="xsd:string"/>
+                    <xsd:element name="email" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="status" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="department" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="UpdateEmployeeRequest">
+                <xsd:sequence>
+                    <xsd:element name="id" type="xsd:int"/>
+                    <xsd:element name="first_name" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="last_name" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="email" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="status" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="department" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="job_title" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Messages -->
+            <xsd:element name="GetEmployeeRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="id" type="xsd:int"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <xsd:element name="GetEmployeeResponse" type="hr:Employee"/>
+            <xsd:element name="GetEmployeeByEmailRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="email" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="GetEmployeeByEmailResponse" type="hr:Employee"/>
+            <xsd:element name="GetEmployeeByNumberRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="employeeNumber" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="GetEmployeeByNumberResponse" type="hr:Employee"/>
+
+            <xsd:element name="ListEmployeesRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="status" type="xsd:string" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="ListEmployeesResponse" type="hr:EmployeeArray"/>
+
+            <xsd:element name="CreateEmployeeRequest" type="hr:CreateEmployeeRequest"/>
+            <xsd:element name="CreateEmployeeResponse" type="hr:Employee"/>
+
+            <xsd:element name="UpdateEmployeeRequest" type="hr:UpdateEmployeeRequest"/>
+            <xsd:element name="UpdateEmployeeResponse" type="hr:Employee"/>
+
+            <xsd:element name="DeleteEmployeeRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="id" type="xsd:int"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="DeleteEmployeeResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="success" type="xsd:boolean"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+
+            <!-- Fault Types -->
+            <xsd:complexType name="FaultDetail">
+                <xsd:sequence>
+                    <xsd:element name="code" type="xsd:string"/>
+                    <xsd:element name="message" type="xsd:string"/>
+                    <xsd:element name="details" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:element name="NotFoundFault" type="hr:FaultDetail"/>
+            <xsd:element name="ValidationFault" type="hr:FaultDetail"/>
+            <xsd:element name="ServerFault" type="hr:FaultDetail"/>
+
+        </xsd:schema>
+    </wsdl:types>
+
+    <!-- Port Type -->
+    <wsdl:portType name="EmployeePortType">
+
+        <wsdl:operation name="GetEmployee">
+            <wsdl:documentation>Retrieve a single employee by ID</wsdl:documentation>
+            <wsdl:input message="tns:GetEmployeeInput"/>
+            <wsdl:output message="tns:GetEmployeeOutput"/>
+            <wsdl:fault name="NotFound" message="tns:NotFoundFault"/>
+            <wsdl:fault name="ServerError" message="tns:ServerFault"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetEmployeeByEmail">
+            <wsdl:documentation>Retrieve employee by email address</wsdl:documentation>
+            <wsdl:input message="tns:GetEmployeeByEmailInput"/>
+            <wsdl:output message="tns:GetEmployeeByEmailOutput"/>
+            <wsdl:fault name="NotFound" message="tns:NotFoundFault"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetEmployeeByNumber">
+            <wsdl:documentation>Retrieve employee by employee number</wsdl:documentation>
+            <wsdl:input message="tns:GetEmployeeByNumberInput"/>
+            <wsdl:output message="tns:GetEmployeeByNumberOutput"/>
+            <wsdl:fault name="NotFound" message="tns:NotFoundFault"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="ListEmployees">
+            <wsdl:documentation>List all employees with optional status filter</wsdl:documentation>
+            <wsdl:input message="tns:ListEmployeesInput"/>
+            <wsdl:output message="tns:ListEmployeesOutput"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="CreateEmployee">
+            <wsdl:documentation>Create a new employee record</wsdl:documentation>
+            <wsdl:input message="tns:CreateEmployeeInput"/>
+            <wsdl:output message="tns:CreateEmployeeOutput"/>
+            <wsdl:fault name="Validation" message="tns:ValidationFault"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="UpdateEmployee">
+            <wsdl:documentation>Update an existing employee record</wsdl:documentation>
+            <wsdl:input message="tns:UpdateEmployeeInput"/>
+            <wsdl:output message="tns:UpdateEmployeeOutput"/>
+            <wsdl:fault name="NotFound" message="tns:NotFoundFault"/>
+            <wsdl:fault name="Validation" message="tns:ValidationFault"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="DeleteEmployee">
+            <wsdl:documentation>Delete an employee record</wsdl:documentation>
+            <wsdl:input message="tns:DeleteEmployeeInput"/>
+            <wsdl:output message="tns:DeleteEmployeeOutput"/>
+            <wsdl:fault name="NotFound" message="tns:NotFoundFault"/>
+        </wsdl:operation>
+
+    </wsdl:portType>
+
+    <!-- Messages -->
+    <wsdl:message name="GetEmployeeInput">
+        <wsdl:part name="parameters" element="hr:GetEmployeeRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetEmployeeOutput">
+        <wsdl:part name="parameters" element="hr:GetEmployeeResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="GetEmployeeByEmailInput">
+        <wsdl:part name="parameters" element="hr:GetEmployeeByEmailRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetEmployeeByEmailOutput">
+        <wsdl:part name="parameters" element="hr:GetEmployeeByEmailResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="GetEmployeeByNumberInput">
+        <wsdl:part name="parameters" element="hr:GetEmployeeByNumberRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetEmployeeByNumberOutput">
+        <wsdl:part name="parameters" element="hr:GetEmployeeByNumberResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="ListEmployeesInput">
+        <wsdl:part name="parameters" element="hr:ListEmployeesRequest"/>
+    </wsdl:message>
+    <wsdl:message name="ListEmployeesOutput">
+        <wsdl:part name="parameters" element="hr:ListEmployeesResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="CreateEmployeeInput">
+        <wsdl:part name="parameters" element="hr:CreateEmployeeRequest"/>
+    </wsdl:message>
+    <wsdl:message name="CreateEmployeeOutput">
+        <wsdl:part name="parameters" element="hr:CreateEmployeeResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="UpdateEmployeeInput">
+        <wsdl:part name="parameters" element="hr:UpdateEmployeeRequest"/>
+    </wsdl:message>
+    <wsdl:message name="UpdateEmployeeOutput">
+        <wsdl:part name="parameters" element="hr:UpdateEmployeeResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="DeleteEmployeeInput">
+        <wsdl:part name="parameters" element="hr:DeleteEmployeeRequest"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteEmployeeOutput">
+        <wsdl:part name="parameters" element="hr:DeleteEmployeeResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="NotFoundFault">
+        <wsdl:part name="fault" element="hr:NotFoundFault"/>
+    </wsdl:message>
+    <wsdl:message name="ValidationFault">
+        <wsdl:part name="fault" element="hr:ValidationFault"/>
+    </wsdl:message>
+    <wsdl:message name="ServerFault">
+        <wsdl:part name="fault" element="hr:ServerFault"/>
+    </wsdl:message>
+
+    <!-- Binding -->
+    <wsdl:binding name="EmployeeSoapBinding" type="tns:EmployeePortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <wsdl:operation name="GetEmployee">
+            <soap:operation soapAction="https://ksfraser.com/api/soap/v1/GetEmployee"/>
+            <wsdl:input><soap:body use="literal"/></wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+            <wsdl:fault name="NotFound"><soap:fault name="NotFound" use="literal"/></wsdl:fault>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetEmployeeByEmail">
+            <soap:operation soapAction="https://ksfraser.com/api/soap/v1/GetEmployeeByEmail"/>
+            <wsdl:input><soap:body use="literal"/></wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetEmployeeByNumber">
+            <soap:operation soapAction="https://ksfraser.com/api/soap/v1/GetEmployeeByNumber"/>
+            <wsdl:input><soap:body use="literal"/></wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="ListEmployees">
+            <soap:operation soapAction="https://ksfraser.com/api/soap/v1/ListEmployees"/>
+            <wsdl:input><soap:body use="literal"/></wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="CreateEmployee">
+            <soap:operation soapAction="https://ksfraser.com/api/soap/v1/CreateEmployee"/>
+            <wsdl:input><soap:body use="literal"/></wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+            <wsdl:fault name="Validation"><soap:fault name="Validation" use="literal"/></wsdl:fault>
+        </wsdl:operation>
+
+        <wsdl:operation name="UpdateEmployee">
+            <soap:operation soapAction="https://ksfraser.com/api/soap/v1/UpdateEmployee"/>
+            <wsdl:input><soap:body use="literal"/></wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+            <wsdl:fault name="NotFound"><soap:fault name="NotFound" use="literal"/></wsdl:fault>
+            <wsdl:fault name="Validation"><soap:fault name="Validation" use="literal"/></wsdl:fault>
+        </wsdl:operation>
+
+        <wsdl:operation name="DeleteEmployee">
+            <soap:operation soapAction="https://ksfraser.com/api/soap/v1/DeleteEmployee"/>
+            <wsdl:input><soap:body use="literal"/></wsdl:input>
+            <wsdl:output><soap:body use="literal"/></wsdl:output>
+            <wsdl:fault name="NotFound"><soap:fault name="NotFound" use="literal"/></wsdl:fault>
+        </wsdl:operation>
+
+    </wsdl:binding>
+
+    <!-- Service -->
+    <wsdl:service name="KSFAPIService">
+        <wsdl:documentation>KSF FrontAccounting API Service - Employee Management</wsdl:documentation>
+        <wsdl:port name="EmployeePort" binding="tns:EmployeeSoapBinding">
+            <soap:address location="https://ksfraser.com/api/soap/v1/employees"/>
+        </wsdl:port>
+    </wsdl:service>
+
+</wsdl:definitions>

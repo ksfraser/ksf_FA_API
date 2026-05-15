@@ -1,7 +1,7 @@
 # Business Requirements - FrontAccounting API Adapter (ksf_FA_API)
 
 **Module:** ksf_FA_API  
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Date:** May 2026  
 **Author:** Ksfraser Development Team  
 
@@ -10,6 +10,8 @@
 ## 1. Executive Summary
 
 The FrontAccounting API Adapter (ksf_FA_API) provides a dual-interface integration layer between FrontAccounting's internal business logic and external systems. The module exposes RESTful API endpoints and SOAP web services to enable programmatic access to employee data, facilitating integration with HR systems, third-party applications, and custom development projects.
+
+Additionally, ksf_FA_API includes a **CRM Compatibility Layer** that enables seamless migration from legacy CRM systems (SuiteCRM, SugarCRM, vtiger, Salesforce, Dynamics 365) and ERP/HRM systems (OrangeHRM, Odoo, Dolibarr, dotproject, OpenProject, LibreProject) without requiring changes to existing client integrations.
 
 This adapter follows the Ksfraser architecture pattern of separating business logic (domain entities and repositories) from platform-specific adapters (REST controllers and SOAP services), ensuring maintainability and testability across the FrontAccounting ecosystem.
 
@@ -55,6 +57,8 @@ Organizations using FrontAccounting face significant challenges when integrating
 | Authentication Layer | API key or session-based authentication |
 | Routing System | Slim framework-based route definitions |
 | Unit Tests | Test coverage for controller and service classes |
+| **CRM Compatibility Layer** | SuiteCRM/SugarCRM REST v4.1 API compatibility |
+| **Multi-System Support** | OrangeHRM, Odoo, Dolibarr, dotproject, OpenProject, LibreProject |
 
 ### 3.2 Out of Scope
 
@@ -65,6 +69,31 @@ Organizations using FrontAccounting face significant challenges when integrating
 - Batch operations
 - File upload endpoints
 - Complex queries (filtering beyond status/department)
+
+---
+
+## 3. Supported Legacy Systems
+
+### 3.1 CRM Systems
+
+| System | API Type | Version | Migration Path |
+|--------|----------|---------|----------------|
+| SuiteCRM | REST | v4_1 | Direct drop-in replacement |
+| SugarCRM | REST | v4_1, v10 | Direct drop-in replacement |
+| vtiger CRM | REST | v1 | Direct drop-in replacement |
+| Salesforce | REST | Partner API | Via adapter wrapper |
+| Microsoft Dynamics 365 | REST | v9.x | Via adapter wrapper |
+
+### 3.2 ERP/HRM Systems
+
+| System | API Type | Focus Areas | Migration Path |
+|--------|----------|-------------|----------------|
+| OrangeHRM | REST | HR, Leave, Payroll | Employee sync |
+| Odoo | XML-RPC / REST | All modules | Via adapter |
+| Dolibarr | REST | HR, Invoicing | Module-by-module |
+| dotproject | XML-RPC | Projects, Tasks | Via adapter |
+| OpenProject | REST | Project management | Direct |
+| LibreProject | REST | Project management | Direct |
 
 ---
 
