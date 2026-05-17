@@ -4,7 +4,7 @@
     "type": "fa-module",
     "license": "GPL-3.0",
     "require": {
-        "php": "^8.1"
+        "php": ">=7.4"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.0"
