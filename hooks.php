@@ -1,6 +1,29 @@
 <?php
 /**
- * ksf_FA_API Module Hooks for FrontAccounting
+ * KSF FrontAccounting Module Hooks
+ * 
+ * STANDARD PATTERNS:
+ * 
+ * 1. ADDING MODULE TABS
+ *    Define a class extending 'application' in hooks.php.
+ *    Return new instance from install_tabs().
+ *    Include add_extensions() to load other modules' install_options.
+ * 
+ * 2. ADDING MENU ITEMS TO EXISTING APPS
+ *    Use install_options() with switch($app->id).
+ *    Use add_module() + add_lapp_function() for new menu section.
+ * 
+ * 3. DATABASE SCHEMA
+ *    DO NOT create tables in PHP code.
+ *    Use sql/install.sql with @TB_PREF@ placeholders.
+ *    Call $this->update_databases() in activate_extension().
+ * 
+ * 4. SECURITY
+ *    Define SS_<MODULE> constant (section << 8).
+ *    Define SA_<MODULE>VIEW and SA_<MODULE>MANAGE in install_access().
+ * 
+ * @package KsfFA_ksf_FA_API
+ * @version 2.4.3
  */
 
 define('SS_ksf_FA_API', 124 << 8);
@@ -9,24 +32,70 @@ class hooks_ksf_FA_API extends hooks {
     var $module_name = 'ksf_FA_API';
     var $version = '1.0.0';
 
+    /**
+     * Add module tab
+     * 
+     * Return new application class instance to add a tab.
+     * Omit or return nothing to skip tab addition.
+     * 
+     * @param application|null $app Ignored
+     * @return application|null New tab application instance or nothing
+     */
+    function install_tabs($app) {
+        // Override in modules that add apps
+        // return new ksf_FA_API_app();
+    }
+
+    /**
+     * Add menu items to existing FA applications
+     * 
+     * @param application $app FA application instance
+     */
+    function install_options($app) {
+        // Override in modules that add menu items
+    }
+
+    /**
+     * Define security areas
+     * 
+     * @return array [0] => $security_areas, [1] => $security_sections
+     */
     function install_access() {
-        $security_sections[SS_ksf_FA_API] = _("API");
-        $security_areas['SA_ksf_FA_APIVIEW'] = array(SS_ksf_FA_API | 1, _("View API"));
-        $security_areas['SA_ksf_FA_APIMANAGE'] = array(SS_ksf_FA_API | 2, _("Manage API"));
+        $security_sections[SS_ksf_FA_API] = _("");
+        $security_areas['SA_ksf_FA_APIVIEW'] = array(
+            SS_ksf_FA_API | 1, 
+            _("View ")
+        );
+        $security_areas['SA_ksf_FA_APIMANAGE'] = array(
+            SS_ksf_FA_API | 2, 
+            _("Manage ")
+        );
         return array($security_areas, $security_sections);
     }
 
+    /**
+     * Activate extension
+     * 
+     * @param int $company Company number
+     * @param bool $check_only Only check if activation possible
+     * @return bool Success
+     */
     function activate_extension($company, $check_only=true) {
         $this->ensure_composer_dependencies();
         
-        if ($check_only) {
-            return true;
+        // Apply sql/install.sql using update_databases()
+        // This handles @TB_PREF@ replacement automatically
+        if (file_exists(dirname(__FILE__) . '/sql/install.sql')) {
+            $updates = array('install.sql' => array($this->module_name));
+            return $this->update_databases($company, $updates, $check_only);
         }
         
-        $this->ensure_api_schema();
         return true;
     }
 
+    /**
+     * Install composer dependencies if needed
+     */
     private function ensure_composer_dependencies(): void {
         $module_dir = dirname(__FILE__);
         $autoload_path = $module_dir . '/vendor/autoload.php';
@@ -45,40 +114,7 @@ class hooks_ksf_FA_API extends hooks {
         $return_code = 0;
         exec('composer install --no-interaction --prefer-dist 2>&1', $output, $return_code);
         if ($return_code !== 0) {
-            error_log('KSF API: composer install failed: ' . implode("\n", $output));
-        }
-    }
-
-    private function table_exists($table) {
-        $sql = "SHOW TABLES LIKE " . db_escape($table);
-        $res = db_query($sql, 'Failed checking table existence');
-        return db_num_rows($res) > 0;
-    }
-
-    private function ensure_api_schema() {
-        $tables = array(
-            TB_PREF . "ksf_api_logs" => "
-                CREATE TABLE IF NOT EXISTS `" . TB_PREF . "ksf_api_logs` (
-                    `id` INT(11) NOT NULL AUTO_INCREMENT,
-                    `endpoint` VARCHAR(255) NOT NULL,
-                    `method` VARCHAR(10) NOT NULL,
-                    `request_data` TEXT,
-                    `response_data` TEXT,
-                    `status_code` INT(3) DEFAULT NULL,
-                    `error_message` TEXT,
-                    `user_id` VARCHAR(100) DEFAULT NULL,
-                    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    PRIMARY KEY (`id`),
-                    KEY `idx_endpoint` (`endpoint`),
-                    KEY `idx_user` (`user_id`),
-                    KEY `idx_created` (`created_at`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
-        );
-
-        foreach ($tables as $table_name => $sql) {
-            if (!$this->table_exists($table_name)) {
-                db_query($sql, "Could not create table: $table_name");
-            }
+            error_log('KSF Module: composer install failed: ' . implode("\n", $output));
         }
     }
 }
