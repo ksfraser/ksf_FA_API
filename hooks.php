@@ -137,6 +137,7 @@ class hooks_ksf_FA_API extends hooks {
     protected function _getAdvertisedValues(): array
     {
         return array(
+            'api.sec_section'   => SS_ksf_FA_API,
             'api.version'       => $this->version,
             'api.module_name'   => $this->module_name,
             'api.hooks_version' => '2.0',
