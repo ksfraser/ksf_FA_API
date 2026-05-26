@@ -28,18 +28,7 @@
 
 define('SS_ksf_FA_API', 124 << 8);
 
-// ---------------------------------------------------------------------------
-// Ensure Composer autoloader is loaded before the class definition so that
-// trait dependencies (HookQueryProviderTrait) are available at class-load time.
-// ---------------------------------------------------------------------------
-$moduleAutoload = dirname(__FILE__) . '/vendor/autoload.php';
-if (file_exists($moduleAutoload)) {
-    require_once $moduleAutoload;
-}
-
 class hooks_ksf_FA_API extends hooks {
-    use \Ksfraser\Traits\HookQueryProviderTrait;
-
     var $module_name = 'ksf_FA_API';
     var $version = '1.0.0';
 
@@ -127,20 +116,5 @@ class hooks_ksf_FA_API extends hooks {
         if ($return_code !== 0) {
             error_log('KSF Module: composer install failed: ' . implode("\n", $output));
         }
-    }
-
-    /**
-     * Return all values this module advertises via the query hook system.
-     *
-     * @return array<string, mixed>
-     */
-    protected function _getAdvertisedValues(): array
-    {
-        return array(
-            'api.sec_section'   => SS_ksf_FA_API,
-            'api.version'       => $this->version,
-            'api.module_name'   => $this->module_name,
-            'api.hooks_version' => '2.0',
-        );
     }
 }
