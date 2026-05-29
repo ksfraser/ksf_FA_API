@@ -27,7 +27,7 @@ $employeeRepo = new EmployeeRepository();
 $soapService = new EmployeeSoapService($employeeRepo);
 
 $envelope = $dom->getElementsByTagNameNS('http://schemas.xmlsoap.org/soap/envelope/', 'Envelope')[0] ?? null;
-$body = $envelope?->getElementsByTagNameNS('http://schemas.xmlsoap.org/soap/envelope/', 'Body')[0] ?? null;
+$body = $envelope !== null ? $envelope->getElementsByTagNameNS('http://schemas.xmlsoap.org/soap/envelope/', 'Body')[0] : null;
 
 if (!$body || $body->childNodes->length === 0) {
     echo '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
@@ -90,7 +90,8 @@ try {
             break;
 
         case 'ListEmployees':
-            $status = $action->getElementsByTagName('status')[0]?->textContent;
+            $statusNode = $action->getElementsByTagName('status')[0];
+            $status = $statusNode !== null ? $statusNode->textContent : null;
             $result = $soapService->listEmployees($status);
             echo generateResponse(arrayToXml(['employee' => $result], 'ListEmployeesResponse'));
             break;

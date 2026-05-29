@@ -20,26 +20,43 @@ class CRMController
 
     public function handleRequest(string $method, array $params): array
     {
-        return match ($method) {
-            'login' => $this->login($params),
-            'logout' => $this->logout($params),
-            'get_entry' => $this->getEntry($params),
-            'get_entry_list' => $this->getEntryList($params),
-            'get_entries_count' => $this->getEntriesCount($params),
-            'set_entry' => $this->setEntry($params),
-            'set_entries' => $this->setEntries($params),
-            'set_relationship' => $this->setRelationship($params),
-            'set_relationships' => $this->setRelationships($params),
-            'delete' => $this->deleteEntry($params),
-            'get_module_fields' => $this->getModuleFields($params),
-            'get_module_field_md5' => $this->getModuleFieldMd5($params),
-            'get_available_modules' => $this->getAvailableModules($params),
-            'get_user_id' => $this->getUserId($params),
-            'get_user_team_id' => $this->getUserTeamId($params),
-            'seamless_login' => $this->seamlessLogin($params),
-            'is_loopback_available' => $this->isLoopbackAvailable($params),
-            default => throw new \BadMethodCallException("Unknown method: $method"),
-        };
+        if ($method === 'login') {
+            return $this->login($params);
+        } elseif ($method === 'logout') {
+            return $this->logout($params);
+        } elseif ($method === 'get_entry') {
+            return $this->getEntry($params);
+        } elseif ($method === 'get_entry_list') {
+            return $this->getEntryList($params);
+        } elseif ($method === 'get_entries_count') {
+            return $this->getEntriesCount($params);
+        } elseif ($method === 'set_entry') {
+            return $this->setEntry($params);
+        } elseif ($method === 'set_entries') {
+            return $this->setEntries($params);
+        } elseif ($method === 'set_relationship') {
+            return $this->setRelationship($params);
+        } elseif ($method === 'set_relationships') {
+            return $this->setRelationships($params);
+        } elseif ($method === 'delete') {
+            return $this->deleteEntry($params);
+        } elseif ($method === 'get_module_fields') {
+            return $this->getModuleFields($params);
+        } elseif ($method === 'get_module_field_md5') {
+            return $this->getModuleFieldMd5($params);
+        } elseif ($method === 'get_available_modules') {
+            return $this->getAvailableModules($params);
+        } elseif ($method === 'get_user_id') {
+            return $this->getUserId($params);
+        } elseif ($method === 'get_user_team_id') {
+            return $this->getUserTeamId($params);
+        } elseif ($method === 'seamless_login') {
+            return $this->seamlessLogin($params);
+        } elseif ($method === 'is_loopback_available') {
+            return $this->isLoopbackAvailable($params);
+        }
+
+        throw new \BadMethodCallException("Unknown method: $method");
     }
 
     private function requireSession(array $params): array
@@ -393,7 +410,7 @@ class CRMController
         return $result;
     }
 
-    private function formatValue(mixed $value): mixed
+    private function formatValue($value)
     {
         if ($value instanceof \DateTime) {
             return $value->format('Y-m-d H:i:s');

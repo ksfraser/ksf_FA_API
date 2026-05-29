@@ -140,15 +140,15 @@ class SoapClient
 
     public function getLastRequest(): ?string
     {
-        return $this->client?->__getLastRequest();
+        return $this->client !== null ? $this->client->__getLastRequest() : null;
     }
 
     public function getLastResponse(): ?string
     {
-        return $this->client?->__getLastResponse();
+        return $this->client !== null ? $this->client->__getLastResponse() : null;
     }
 
-    private function stdToArray(object|array $std): array
+    private function stdToArray($std): array
     {
         return json_decode(json_encode($std), true) ?? [];
     }

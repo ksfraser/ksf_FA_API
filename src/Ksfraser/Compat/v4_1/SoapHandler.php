@@ -86,7 +86,7 @@ class SoapHandler
         return $result;
     }
 
-    private function castValue(string $value): mixed
+    private function castValue(string $value)
     {
         if ($value === 'true' || $value === 'false') {
             return $value === 'true';
@@ -102,32 +102,47 @@ class SoapHandler
         return $value;
     }
 
-    private function dispatchSoapMethod(string $method, array $params): mixed
+    private function dispatchSoapMethod(string $method, array $params)
     {
-        return match ($method) {
-            'do_login', 'login' => $this->crm->login([
+        if ($method === 'do_login' || $method === 'login') {
+            return $this->crm->login([
                 'user_auth' => $params['user_auth'] ?? $params,
-            ]),
-            'do_logout', 'logout' => $this->crm->logout($params),
-            'get_entry' => $this->crm->getEntry($params),
-            'get_entry_list' => $this->crm->getEntryList($params),
-            'get_entries_count' => $this->crm->getEntriesCount($params),
-            'set_entry' => $this->crm->setEntry($params),
-            'set_entries' => $this->crm->setEntries($params),
-            'set_relationship' => $this->crm->setRelationship($params),
-            'delete_entry' => $this->crm->deleteEntry($params),
-            'get_module_fields' => $this->crm->getModuleFields($params),
-            'get_module_field_md5' => $this->crm->getModuleFieldMd5($params),
-            'get_available_modules' => $this->crm->getAvailableModules($params),
-            'get_user_id' => $this->crm->getUserId($params),
-            'get_user_team_id' => $this->crm->getUserTeamId($params),
-            'seamless_login' => $this->crm->seamlessLogin($params),
-            'is_loopback_available' => $this->crm->isLoopbackAvailable($params),
-            default => throw new \BadMethodCallException("Unknown method: $method"),
-        };
-    }
+            ]);
+        } elseif ($method === 'do_logout' || $method === 'logout') {
+            return $this->crm->logout($params);
+        } elseif ($method === 'get_entry') {
+            return $this->crm->getEntry($params);
+        } elseif ($method === 'get_entry_list') {
+            return $this->crm->getEntryList($params);
+        } elseif ($method === 'get_entries_count') {
+            return $this->crm->getEntriesCount($params);
+        } elseif ($method === 'set_entry') {
+            return $this->crm->setEntry($params);
+        } elseif ($method === 'set_entries') {
+            return $this->crm->setEntries($params);
+        } elseif ($method === 'set_relationship') {
+            return $this->crm->setRelationship($params);
+        } elseif ($method === 'delete_entry') {
+            return $this->crm->deleteEntry($params);
+        } elseif ($method === 'get_module_fields') {
+            return $this->crm->getModuleFields($params);
+        } elseif ($method === 'get_module_field_md5') {
+            return $this->crm->getModuleFieldMd5($params);
+        } elseif ($method === 'get_available_modules') {
+            return $this->crm->getAvailableModules($params);
+        } elseif ($method === 'get_user_id') {
+            return $this->crm->getUserId($params);
+        } elseif ($method === 'get_user_team_id') {
+            return $this->crm->getUserTeamId($params);
+        } elseif ($method === 'seamless_login') {
+            return $this->crm->seamlessLogin($params);
+        } elseif ($method === 'is_loopback_available') {
+            return $this->crm->isLoopbackAvailable($params);
+        }
 
-    private function buildResponse(string $elementName, mixed $data): string
+        throw new \BadMethodCallException("Unknown method: $method");
+
+    private function buildResponse(string $elementName, $data): string
     {
         $xmlData = $this->arrayToXml($data, $elementName);
 
@@ -139,7 +154,7 @@ class SoapHandler
 </soap:Envelope>';
     }
 
-    private function arrayToXml(mixed $data, string $rootName): string
+    private function arrayToXml($data, string $rootName): string
     {
         if (is_null($data)) {
             return '<' . $rootName . ' xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>';

@@ -191,15 +191,21 @@ class OdooAdapter
 
         $ksfModule = $this->system->translateModule($model);
 
-        return match ($method) {
-            'search' => $this->search($ksfModule, $args, $kwargs),
-            'search_read' => $this->searchRead($ksfModule, $args, $kwargs),
-            'read' => $this->read($ksfModule, $args, $kwargs),
-            'create' => $this->create($ksfModule, $args),
-            'write' => $this->write($ksfModule, $args),
-            'unlink' => $this->unlink($ksfModule, $args),
-            default => ['faultCode' => 1, 'faultString' => "Unknown method: $method"],
-        };
+        if ($method === 'search') {
+            return $this->search($ksfModule, $args, $kwargs);
+        } elseif ($method === 'search_read') {
+            return $this->searchRead($ksfModule, $args, $kwargs);
+        } elseif ($method === 'read') {
+            return $this->read($ksfModule, $args, $kwargs);
+        } elseif ($method === 'create') {
+            return $this->create($ksfModule, $args);
+        } elseif ($method === 'write') {
+            return $this->write($ksfModule, $args);
+        } elseif ($method === 'unlink') {
+            return $this->unlink($ksfModule, $args);
+        }
+
+        return ['faultCode' => 1, 'faultString' => "Unknown method: $method"];
     }
 
     private function search(string $module, array $args, array $kwargs): array
@@ -342,20 +348,26 @@ class OdooAdapter
         return implode(' AND ', $conditions);
     }
 
-    private function operatorToSql(string $field, string $op, mixed $value): string
+    private function operatorToSql(string $field, string $op, $value): string
     {
         $value = addslashes($value);
-        return match ($op) {
-            '=' => "$field = '$value'",
-            '!=' => "$field != '$value'",
-            'like', 'ilike' => "$field LIKE '%$value%'",
-            '>' => "$field > '$value'",
-            '<' => "$field < '$value'",
-            '>=' => "$field >= '$value'",
-            '<=' => "$field <= '$value'",
-            default => "$field = '$value'",
-        };
-    }
+        if ($op === '=') {
+            return "$field = '$value'";
+        } elseif ($op === '!=') {
+            return "$field != '$value'";
+        } elseif ($op === 'like' || $op === 'ilike') {
+            return "$field LIKE '%$value%'";
+        } elseif ($op === '>') {
+            return "$field > '$value'";
+        } elseif ($op === '<') {
+            return "$field < '$value'";
+        } elseif ($op === '>=') {
+            return "$field >= '$value'";
+        } elseif ($op === '<=') {
+            return "$field <= '$value'";
+        }
+
+        return "$field = '$value'";
 
     private function dictToNameValueList(array $data): array
     {
@@ -623,13 +635,17 @@ class DotProjectAdapter
             return ['faultCode' => 1, 'faultString' => 'Not authenticated'];
         }
 
-        return match ($method) {
-            'project.list' => $this->listProjects(),
-            'project.get' => $this->getProject($params['project_id'] ?? 0),
-            'task.list' => $this->listTasks($params['project_id'] ?? null),
-            'user.list' => $this->listUsers(),
-            default => ['faultCode' => 1, 'faultString' => "Unknown method: $method"],
-        };
+        if ($method === 'project.list') {
+            return $this->listProjects();
+        } elseif ($method === 'project.get') {
+            return $this->getProject($params['project_id'] ?? 0);
+        } elseif ($method === 'task.list') {
+            return $this->listTasks($params['project_id'] ?? null);
+        } elseif ($method === 'user.list') {
+            return $this->listUsers();
+        }
+
+        return ['faultCode' => 1, 'faultString' => "Unknown method: $method"];
     }
 
     private function listProjects(): array
