@@ -1,7 +1,6 @@
 -- API Module Schema
--- Uses @TB_PREF@ for table prefix
 
-CREATE TABLE IF NOT EXISTS @TB_PREF@ksf_api_logs (
+CREATE TABLE IF NOT EXISTS `0_ksf_api_logs` (
     id INT(11) NOT NULL AUTO_INCREMENT,
     endpoint VARCHAR(255) NOT NULL,
     method VARCHAR(10) NOT NULL,
