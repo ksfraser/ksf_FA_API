@@ -61,7 +61,7 @@ class hooks_ksf_FA_API extends hooks {
      * @return array [0] => $security_areas, [1] => $security_sections
      */
     function install_access() {
-        $security_sections[SS_ksf_FA_API] = _("");
+        $security_sections[SS_ksf_FA_API] = _("API");
         $security_areas['SA_ksf_FA_APIVIEW'] = array(
             SS_ksf_FA_API | 1, 
             _("View ")
